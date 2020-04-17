@@ -35,7 +35,7 @@ const h = 570; */
 }
 #tooltip {
   position: absolute;
-  background-color: rgba(219, 40, 40, 0.8);
+  background-color: rgba(13, 233, 79, 0.8);
   padding: 5px;
   color: white;
   font-size: 12px;
