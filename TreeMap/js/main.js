@@ -85,14 +85,6 @@ d3.json(URL)
       .attr('data-value', d => d.data.value)
       .attr('fill-opacity', 0.6);
 
-    // get the text labels
-    // load WORKING
-    // let temp = [];
-    // rootNode.leaves().forEach(data => {
-    //   temp.push({ x0: data.x0, y0: data.y0, value: data.value });
-    // });
-    // console.log(temp);
-
     // working
     treemapSVG
       .selectAll('values')
@@ -114,10 +106,7 @@ d3.json(URL)
       .enter()
       .append('tspan')
       .attr('class', 'tspan')
-      .attr('x', d => {
-        console.log('d', d);
-        return d.x0 + 2;
-      })
+      .attr('x', d => d.x0 + 2)
       .attr('y', (d, i) => Math.round(d.y0 + 10 + i * 10))
       .text(d => d.text)
       .attr('font-size', '0.5em');
