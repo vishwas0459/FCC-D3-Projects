@@ -8,34 +8,20 @@
 }
 
 .container {
-  /* border: 1px solid red; */
-  /* background-color: aquamarine; */
   margin-bottom: 50px;
   position: relative;
+  margin: 50px auto;
 }
-/* .tspan {
-} */
+
 #choropleth {
-  /* overflow: hidden; */
-  /* border: 1px solid blue; */
   background-color: white;
-  /* const w = 960;
-const h = 570; */
-  /* min-width: 960px;
-  min-height: 570px; */
+  padding: 20px;
   position: absolute;
 }
 
-#legend svg {
-  border: 1px solid grey;
-}
-
-.tile {
-  overflow: hidden;
-}
 #tooltip {
   position: absolute;
-  background-color: rgba(13, 233, 79, 0.8);
+  background-color: rgb(174, 0, 255);
   padding: 5px;
   color: white;
   font-size: 12px;
