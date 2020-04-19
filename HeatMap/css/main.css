@@ -38,3 +38,8 @@
 .cell:hover {
   border: 3px solid white;
 }
+
+#legend {
+  margin: auto;
+  /* background-color: gray; */
+}
