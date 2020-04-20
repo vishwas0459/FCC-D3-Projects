@@ -1,22 +1,14 @@
-const URL =
-  'https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json';
+const URL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json';
 
-// const margin = { top: 20, left: 20, right: 20, bottom: 20 };
-const w = 960;
-const h = 570;
+const margin = { top: 50, left: 50, right: 50, bottom: 50 };
+const w = 900;
+const h = 550;
+const colors = d3.scaleOrdinal(d3.schemeCategory10);
 
 // Attach SVGs
-const treemapSVG = d3
-  .select('#treemap')
-  .append('svg')
-  .attr('width', w)
-  .attr('height', h);
+const treemapSVG = d3.select('#treemap').append('svg').attr('width', w).attr('height', h);
 
-const legendSVG = d3
-  .select('#legend')
-  .append('svg')
-  .attr('width', w)
-  .attr('height', 200);
+const legendSVG = d3.select('#legend').append('svg').attr('width', w).attr('height', 50);
 
 // tooltip
 const tooltip = d3
@@ -25,7 +17,7 @@ const tooltip = d3
   .attr('id', 'tooltip')
   .attr('width', 'auto')
   .attr('height', 'auto')
-  .attr('display', 'none');
+  .style('display', 'none');
 
 const mouseover = d => {
   tooltip
@@ -53,18 +45,17 @@ d3.json(URL)
     dataset = data;
 
     // create the treemap
-    const rootNode = d3
-      .treemap()
-      .size([w, h])
-      .tile(d3.treemapBinary)
-      .round(true)
-      .padding(1)(d3.hierarchy(data).sum(d => d.value));
+    const rootNode = d3.treemap().size([w, h]).tile(d3.treemapBinary)(
+      d3
+        .hierarchy(data)
+        .sum(d => d.value)
+        .sort(function (a, b) {
+          return b.value - a.value;
+        })
+    );
 
     // create color scheme
-    const colors = d3.scaleOrdinal(d3.schemeCategory10);
-
-    // create tile
-    const myTitle = treemapSVG
+    treemapSVG
       .selectAll('rect')
       .data(rootNode.leaves())
       .enter()
@@ -83,7 +74,8 @@ d3.json(URL)
       .attr('data-name', d => d.data.name)
       .attr('data-category', d => d.data.category)
       .attr('data-value', d => d.data.value)
-      .attr('fill-opacity', 0.6);
+      .attr('fill-opacity', 0.8)
+      .attr('stroke', 'white');
 
     // working
     treemapSVG
@@ -104,6 +96,7 @@ d3.json(URL)
         })
       )
       .enter()
+      // for text label on tile
       .append('tspan')
       .attr('class', 'tspan')
       .attr('x', d => d.x0 + 2)
@@ -111,29 +104,24 @@ d3.json(URL)
       .text(d => d.text)
       .attr('font-size', '0.5em');
 
-    const { children } = dataset;
-    let keys = [];
-
-    keys = children.map(child => child.name);
+    let keys = dataset.children.map(child => child.name);
 
     keys.forEach((key, i) => {
-      let legendRow = legendSVG
-        .append('g')
-        .attr('transform', 'translate(0,15)');
+      let legendRow = legendSVG.append('g');
 
       legendRow
         .append('rect')
         .attr('class', 'legend-item')
-        .attr('width', 10)
-        .attr('height', 25)
-        .attr('x', 5)
-        .attr('y', i * 20)
-        .attr('fill', colors(key));
-
+        .attr('width', 100)
+        .attr('height', 20)
+        .attr('x', i * 100)
+        .attr('y', 0)
+        .attr('fill', colors(key))
+        .attr('opacity', 0.8);
       legendRow
         .append('text')
-        .attr('x', 22)
-        .attr('y', i * 20 + 15)
+        .attr('x', i * 100 + 5)
+        .attr('y', 40)
         .attr('text-anchor', 'start')
         .text(key);
     });

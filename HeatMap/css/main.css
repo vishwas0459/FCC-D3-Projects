@@ -1,25 +1,21 @@
 * {
+  margin: 0;
+  padding: 0;
+  text-align: center;
   box-sizing: border-box;
 }
 
-#title,
-#description {
-  text-align: center;
+#title {
+  padding: 10px;
 }
 
 .container {
-  /* color: white; */
   margin-bottom: 150px;
 }
 
 #heatmap {
-  /* max-width: 900;
-  max-height: 700;  */
   margin: auto;
   position: relative;
-  /* background-color: rgb(49, 163, 216); 
-   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6), -1px -2px 3px rgba(0, 0, 0, 0.6); 
-  top: 20px;  */
 }
 
 #tooltip {
@@ -31,15 +27,10 @@
   border-radius: 10px;
 }
 
-/* TODO:Add outline to cell on hover */
-.cell {
-  outline: none;
-}
 .cell:hover {
-  border: 3px solid white;
+  fill: blue;
 }
 
 #legend {
-  margin: auto;
-  /* background-color: gray; */
+  margin: 0 auto;
 }

@@ -3,24 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/main.css" />
     <title>HeatMap</title>
   </head>
   <body>
     <div class="container">
-      <h1 id="title">Monthly Global Land-Surface Temperature</h1>
+      <h3 id="title">Monthly Global Land-Surface Temperature</h3>
       <p id="description">1753 - 2015: base temperature 8.66℃</p>
       <div class="row">
-        <div id="heatmap"></div>
+        <div id="legend"></div>
       </div>
       <div class="row">
-        <div id="legend"></div>
+        <div id="heatmap"></div>
       </div>
     </div>
 
     <!-- FCC Test Suite -->
-    <script src="js/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.1/d3.min.js"></script>
     <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
     <script src="js/main.js"></script>
   </body>

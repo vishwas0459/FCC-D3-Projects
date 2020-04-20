@@ -1,10 +1,24 @@
 // 'use strict';
-const margin = { top: 50, right: 50, bottom: 50, left: 70 };
+const margin = { top: 50, right: 70, bottom: 50, left: 70 };
 const WIDTH = 1000 - margin.left - margin.right;
 const HEIGHT = 500 - margin.top - margin.bottom;
 
-const URL =
-  'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json';
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const URL = 'https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json';
 let dataset = [];
 
 // ATTACH SVG CANVAS
@@ -14,17 +28,10 @@ const heatMapSVG = d3
   .attr('width', WIDTH + margin.left + margin.right)
   .attr('height', HEIGHT + margin.top + margin.bottom)
   .append('g') // group so that we can add both axis
-  .attr('transform', `translate(${margin.left}, ${margin.top})`); // add some margin to visualization
-// .attr('fill', 'grey');
+  .attr('transform', `translate(${margin.left}, ${0})`); // add some margin to visualization
 
 // Attach legendSVG
-const legendSVG = d3
-  .select('#legend')
-  .append('svg')
-  .attr('height', '100')
-  .attr('width', `${WIDTH}`)
-  .append('g') // group so that we can add both axis
-  .attr('transform', `translate(${margin.left}, ${margin.top})`); // add some margin to visualization
+const legendSVG = d3.select('#legend').append('svg').attr('height', '50').attr('width', `${WIDTH}`).append('g'); // group so that we can add both axis
 
 // label on x axis
 heatMapSVG
@@ -63,9 +70,7 @@ const mouseover = d => {
     .attr('data-year', d.year)
     .style('display', 'inline-block')
     .html(
-      `<span>${d.year} - ${d3.timeFormat('%b')(
-        new Date(2010, d.month - 1, 1)
-      )}</span>
+      `<span>${d.year} - ${monthNames[d.month - 1]}</span>
       </br>
     <span>${(d.variance + baseTemperature).toFixed(1)}&#8451;</span>
     </br>
@@ -80,14 +85,27 @@ const mouseleave = d => {
 };
 
 const xScale = d3.scaleLinear().range([0, WIDTH]);
-const yScale = d3.scaleTime().range([20, HEIGHT - 20]);
+const yScale = d3.scaleBand().range([0, HEIGHT]);
 let baseTemperature = null;
+
+const colorPallete = [
+  '#f1c27d',
+  '#ffdbac',
+  '#e0ac69',
+  '#c68642',
+  '#8d5524',
+  '#b2d8d8',
+  '#66b2b2',
+  '#008080',
+  '#006666',
+  '#004c4c',
+  '#003333',
+];
 //LOAD DATA
 d3.json(URL)
   .then(data => {
     dataset = data.monthlyVariance;
     baseTemperature = data.baseTemperature;
-    // console.log('tempvariance', d3.extent(tempVariance));
     let yearDataset = [];
     dataset
       .map(data => data.year)
@@ -108,46 +126,29 @@ d3.json(URL)
       .scaleThreshold()
       .domain(legendDomain)
       // used https://www.color-hex.com/ to get below color pallets
-      .range([
-        '#f1c27d',
-        '#ffdbac',
-        '#e0ac69',
-        '#c68642',
-        '#8d5524',
-        '#b2d8d8',
-        '#66b2b2',
-        '#008080',
-        '#006666',
-        '#004c4c',
-        '#003333',
-      ]);
+      .range(colorPallete);
 
     const legendXScale = d3
       .scaleLinear()
       .domain(d3.extent(legendDomain))
       .range([200, WIDTH - 200]);
-    console.log('legendDomain', legendDomain);
+
     const legendAxis = d3
       .axisBottom(legendXScale)
       .tickSize(25)
-      // .ticks(8)
       .tickValues([...legendDomain])
       .tickFormat(d3.format('.1f'));
 
     const temp = legendSVG.append('g').call(legendAxis);
-    // .attr('transform', `translate(0,0)`);
-
-    temp.select('.domain').remove();
+    // temp.select('.domain').remove();
 
     temp
       .selectAll('rects')
       .data(
         colorScale.range().map(clr => {
           let invertClr = colorScale.invertExtent(clr);
-          if (invertClr[0] == null || undefined)
-            invertClr[0] = legendXScale.domain()[0];
-          if (invertClr[1] == null || undefined)
-            invertClr[1] = legendXScale.domain()[1];
+          if (invertClr[0] == null || undefined) invertClr[0] = legendXScale.domain()[0];
+          if (invertClr[1] == null || undefined) invertClr[1] = legendXScale.domain()[1];
           return invertClr;
         })
       )
@@ -165,32 +166,22 @@ d3.json(URL)
       })
       .attr('stroke', 'black');
     // display
-    heatMapSVG
-      .append('g')
-      .attr('id', 'x-axis')
-      .attr('transform', `translate(3,${HEIGHT})`)
-      .call(xAxis);
+    heatMapSVG.append('g').attr('id', 'x-axis').attr('transform', `translate(1,${HEIGHT})`).call(xAxis);
 
     // Yscale
     let timeDataset = [];
     for (let i = 0; i < 12; i++) {
-      timeDataset.push(new Date(2010, i, 1));
+      timeDataset.push(i);
     }
-    // console.log(d3.extent(timeDataset));
-    yScale.domain(d3.extent(timeDataset));
-    const yAxis = d3.axisLeft(yScale).tickFormat(d3.timeFormat('%B'));
+    yScale.domain(timeDataset);
 
+    // console.log('verify yScale', yScale(0));
+    const yAxis = d3
+      .axisLeft(yScale)
+      .tickValues(yScale.domain())
+      .tickFormat(d => monthNames[d]);
     // display
-    heatMapSVG
-      .append('g')
-      .attr('id', 'y-axis')
-      // .attr('transform', `translate(0,${HEIGHT})`)
-      .call(yAxis);
-
-    // check NaN value
-    dataset.forEach(d => {
-      console.log('d.month', d.month - 1);
-    });
+    heatMapSVG.append('g').attr('id', 'y-axis').attr('transform', `translate(-1,0)`).call(yAxis);
 
     // now plot the data on svg
     heatMapSVG
@@ -199,18 +190,15 @@ d3.json(URL)
       .enter()
       .append('rect')
       .attr('class', 'cell')
-      .attr('width', '3px')
-      .attr('height', '40px')
+      .attr('width', WIDTH / (d3.max(dataset, d => d.year) - d3.min(dataset, d => d.year)))
+      .attr('height', yScale.bandwidth())
       .attr('fill', d => colorScale(d.variance + baseTemperature))
       .attr('x', d => xScale(d.year))
-      .attr('y', d => yScale(new Date(2010, d.month - 1 || 0, 1)))
-      .attr('data-month', d =>
-        d3.timeFormat('%B')(new Date(2010, d.month - 1 || 0, 1))
-      )
+      .attr('y', d => yScale(d.month - 1))
+      .attr('data-month', d => d.month - 1)
       .attr('data-year', d => d.year)
-      .attr('data-temp', d => d.variance + baseTemperature)
+      .attr('data-temp', d => d.variance)
       .on('mouseover', mouseover)
-      .on('mouseleave', mouseleave)
-      .attr('transform', d => `translate(2,-20)`);
+      .on('mouseleave', mouseleave);
   })
   .catch(err => console.log(err));
